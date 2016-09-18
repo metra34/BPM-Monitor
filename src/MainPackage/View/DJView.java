@@ -52,9 +52,6 @@ public class DJView implements ActionListener, BeatObserver, BPMObserver {
 		model.registerObserver((BPMObserver) this);
 	}
 	
-	/**
-	 * @wbp.parser.entryPoint
-	 */
 	public void createView(){
 		//create all swing components
 		// setup viewFrame 
@@ -79,6 +76,9 @@ public class DJView implements ActionListener, BeatObserver, BPMObserver {
 		viewFrame.setVisible(true);
 	}
 	
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	public void createControls(){
 		// create all swing components here
 		JFrame.setDefaultLookAndFeelDecorated(true);
@@ -138,14 +138,15 @@ public class DJView implements ActionListener, BeatObserver, BPMObserver {
 		
 		//panel to hold the incr and decr buttons, 1 row, 2 columns
 		JPanel buttonPanel = new JPanel(new GridLayout(1,2));
-		buttonPanel.add(increaseBPMButton);
 		buttonPanel.add(decreaseBPMButton);
+		buttonPanel.add(increaseBPMButton);
 		
 		JPanel enterPanel = new JPanel(new GridLayout(1,2)); // 1 row, 2 columns, left is bpmlabel, right is textfield
 		enterPanel.add(bpmLabel);
 		enterPanel.add(bpmTextField);
 		JPanel insideControlPanel = new JPanel(new GridLayout(3,1)); //3 rows, 1 column - top has enter bpm: - mid has set button - bottom has decr and incr bpm
 		insideControlPanel.add(enterPanel);
+		insideControlPanel.add(setBPMButton);
 		insideControlPanel.add(buttonPanel);
 		controlPanel.add(insideControlPanel);
 		
@@ -159,22 +160,56 @@ public class DJView implements ActionListener, BeatObserver, BPMObserver {
 		controlFrame.pack();
 		controlFrame.setVisible(true);
 	}
+	
+	public void enableStopMenuItem(){
+		stopMenuItem.setVisible(true);
+	}
+	
+	public void disableStopMenuItem() {
+    	stopMenuItem.setEnabled(false);
+	}
+
+	public void enableStartMenuItem() {
+    	startMenuItem.setEnabled(true);
+	}
+
+	public void disableStartMenuItem() {
+    	startMenuItem.setEnabled(false);
+	}
 
 	@Override
 	public void updateBPM() {
-		// Update 
-
+		if (model != null){
+			int bpm = model.getBPM();
+			if (bpm == 0){
+				if (bpmOutputLabel != null){
+					bpmOutputLabel.setText("offline");
+				}
+			} else{
+				if (bpmOutputLabel != null){
+					bpmOutputLabel.setText("Current BPM: "+model.getBPM());
+				}
+			}
+		}
 	}
 
 	@Override
 	public void updateBeat() {
-		// TODO Auto-generated method stub
-
+		if (beatBar != null){
+			beatBar.setValue(100);
+		}
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
+		// check the action event and perform the appropriate action based on button pressed
+		if (e.getSource() == setBPMButton){
+			int bpm = Integer.parseInt(bpmTextField.getText());
+			controller.setBPM(bpm);
+		} else if (e.getSource() == increaseBPMButton){
+			controller.increaseBPM();
+		} else if(e.getSource() == decreaseBPMButton){
+			controller.decreaseBPM();
+		}
 	}
 }
