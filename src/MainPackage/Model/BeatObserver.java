@@ -1,4 +1,4 @@
-package MainPackage;
+package MainPackage.Model;
 
 public interface BeatObserver {
 	void updateBeat();

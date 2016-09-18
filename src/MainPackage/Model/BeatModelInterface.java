@@ -1,4 +1,4 @@
-package MainPackage;
+package MainPackage.Model;
 
 public interface BeatModelInterface {
 	// methods the controller will use to direct model based on user interaction

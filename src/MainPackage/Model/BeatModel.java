@@ -1,4 +1,4 @@
-package MainPackage;
+package MainPackage.Model;
 
 import java.util.ArrayList;
 
@@ -28,7 +28,6 @@ public class BeatModel implements BeatModelInterface, MetaEventListener {
 			sequencer.start();
 			setBPM(getBPM());
 		}
-
 	}
 
 	@Override
