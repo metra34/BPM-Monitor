@@ -25,7 +25,7 @@ public class BeatModel implements BeatModelInterface, MetaEventListener {
 		// Start the sequence again and send notification to beat observers
 		if (arg0.getType() == 47){
 			beatEvent();
-			sequencer.start();
+			this.sequencer.start();
 			setBPM(getBPM());
 		}
 	}
@@ -35,6 +35,32 @@ public class BeatModel implements BeatModelInterface, MetaEventListener {
 		//setup sequencer and the beat tracks
 		setUpMidi();
 		buildTrackAndStart();
+	}
+	
+	public void setUpMidi() {
+		try{
+			sequencer = MidiSystem.getSequencer();
+			sequencer.open();
+			sequencer.addMetaEventListener(this);
+			sequence = new Sequence(Sequence.PPQ, 4);
+			track = sequence.createTrack();
+			sequencer.setTempoInBPM(getBPM());
+			// added setSequence to fix IllegalStateException
+			sequencer.setSequence(sequence);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	public void buildTrackAndStart() {
+		// TODO Auto-generated method stub
+		int[] trackList = {35, 0, 46, 0};
+		
+		sequence.deleteTrack(null);
+		track = sequence.createTrack();
+		
+		makeTracks(trackList);
+		track.add(makeEvent(192,9,1,0,4));
 	}
 
 	@Override
@@ -47,7 +73,7 @@ public class BeatModel implements BeatModelInterface, MetaEventListener {
 	@Override
 	public void off() {
 		// stop the sequence and set bpm to 0
-		sequencer.stop();
+		this.sequencer.stop();
 		setBPM(0);
 	}
 
@@ -55,7 +81,7 @@ public class BeatModel implements BeatModelInterface, MetaEventListener {
 	public void setBPM(int bpm) {
 		// change bpm and set sequencer to new bpm, notify observers
 		this.bpm = bpm;
-		sequencer.setTempoInBPM(getBPM());
+		this.sequencer.setTempoInBPM(getBPM());
 		notifyBPMObservers();
 	}
 
@@ -103,33 +129,6 @@ public class BeatModel implements BeatModelInterface, MetaEventListener {
 			BPMObserver obs = (BPMObserver) bpmObservers.get(i);
 			obs.updateBPM();
 		}
-		
-	}
-	
-	public void setUpMidi() {
-		// TODO Auto-generated method stub
-		try{
-			sequencer = MidiSystem.getSequencer();
-			sequencer.open();
-			sequencer.addMetaEventListener(this);
-			sequence = new Sequence(Sequence.PPQ, 4);
-			track = sequence.createTrack();
-			sequencer.setTempoInBPM(getBPM());
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		
-	}
-	
-	public void buildTrackAndStart() {
-		// TODO Auto-generated method stub
-		int[] trackList = {35, 0, 46, 0};
-		
-		sequence.deleteTrack(null);
-		track = sequence.createTrack();
-		
-		makeTracks(trackList);
-		track.add(makeEvent(192,9,1,0,4));
 		
 	}
 
