@@ -1,11 +1,10 @@
 package MainPackage.View;
 
 import java.awt.*;
-import java.awt.FlowLayout;
-import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -15,7 +14,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
+import MainPackage.*;
 import MainPackage.Controller.ControllerInterface;
 import MainPackage.Model.BPMObserver;
 import MainPackage.Model.BeatModelInterface;
@@ -57,31 +58,111 @@ public class DJView implements ActionListener, BeatObserver, BPMObserver {
 	public void createView(){
 		//create all swing components
 		// setup viewFrame 
-		beatBar = new BeatBar();
+		viewPanel = new JPanel(new GridLayout(1,2)); // 1 row, 2 columns
 		viewFrame = new JFrame("View");
-		viewFrame.setBounds(new Rectangle(100, 500, 1500, 800));
-		viewFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		viewFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+		viewFrame.setSize(new Dimension(100, 80)); //set size using dimension, not rectangle
 		
-		viewPanel = new JPanel();
-		viewPanel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-		viewPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		viewPanel.setLayout(new GridBagLayout());
+		bpmOutputLabel = new JLabel("offline", SwingConstants.CENTER);
+		beatBar = new BeatBar();
+		beatBar.setValue(0);
 		
-		bpmOutputLabel = new JLabel("Current BPM: ");
+		JPanel bpmPanel = new JPanel(new GridLayout(2, 1)); //2 rows, 1 column - upper beatbar - lower bpm display
+		bpmPanel.add(beatBar);
+		bpmPanel.add(bpmOutputLabel);
+		viewPanel.add(bpmPanel);
 		
-		viewFrame.add(viewPanel);
-		viewFrame.add(beatBar);
-		viewFrame.add(bpmOutputLabel);
-		
+		viewFrame.getContentPane().add(viewPanel, BorderLayout.CENTER);
 		//Size the frame
 		viewFrame.pack();
 		//Show it
 		viewFrame.setVisible(true);
 	}
+	
+	public void createControls(){
+		// create all swing components here
+		JFrame.setDefaultLookAndFeelDecorated(true);
+		controlFrame = new JFrame("Control");
+		controlFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		controlFrame.setSize(new Dimension(100, 80));
+		
+		// panel to hold all controls, 1 row, 2 columns
+		controlPanel = new JPanel(new GridLayout(1,2));
+		
+		menuBar = new JMenuBar();
+		menu = new JMenu("DJ Control");
+		startMenuItem = new JMenuItem("Start");
+		menu.add(startMenuItem);
+		
+		// create menu item, add it to menu, add listener for user interaction with the menu item, repeat for each menu item
+		startMenuItem.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				controller.start();
+			}
+		});
+		
+		stopMenuItem = new JMenuItem("Stop");
+		menu.add(stopMenuItem);
+		stopMenuItem.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				controller.stop();
+			}
+		});
+		
+		JMenuItem exit = new JMenuItem ("Quit");
+		menu.add(exit);
+		exit.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+		
+		// menu bar holds a collection of menus (1 here) which holds a collection of menu items (3 here)
+		menuBar.add(menu);
+		controlFrame.setJMenuBar(menuBar);
+		
+		bpmTextField = new JTextField(2); // 2 represents number of columns in field, can add first arg as initial str text
+		bpmLabel = new JLabel("Enter BPM:", SwingConstants.RIGHT);
+		// initialize buttons
+		setBPMButton = new JButton("Set");
+		setBPMButton.setSize(new Dimension(10, 40));
+		increaseBPMButton = new JButton(">>");
+		decreaseBPMButton = new JButton("<<");
+		
+		// add listener, delegate action to actionPerformed() of this class
+		setBPMButton.addActionListener(this);
+		increaseBPMButton.addActionListener(this);
+		decreaseBPMButton.addActionListener(this);
+		
+		//panel to hold the incr and decr buttons, 1 row, 2 columns
+		JPanel buttonPanel = new JPanel(new GridLayout(1,2));
+		buttonPanel.add(increaseBPMButton);
+		buttonPanel.add(decreaseBPMButton);
+		
+		JPanel enterPanel = new JPanel(new GridLayout(1,2)); // 1 row, 2 columns, left is bpmlabel, right is textfield
+		enterPanel.add(bpmLabel);
+		enterPanel.add(bpmTextField);
+		JPanel insideControlPanel = new JPanel(new GridLayout(3,1)); //3 rows, 1 column - top has enter bpm: - mid has set button - bottom has decr and incr bpm
+		insideControlPanel.add(enterPanel);
+		insideControlPanel.add(buttonPanel);
+		controlPanel.add(insideControlPanel);
+		
+		bpmLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		bpmOutputLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		
+		// getrootpane returns you to the top of the heigharchy, getcontentpane gets the contentpane which is (never?) the top
+		controlFrame.getRootPane().setDefaultButton(setBPMButton); 
+		controlFrame.getContentPane().add(controlPanel, BorderLayout.CENTER);
+		
+		controlFrame.pack();
+		controlFrame.setVisible(true);
+	}
 
 	@Override
 	public void updateBPM() {
-		// TODO Auto-generated method stub
+		// Update 
 
 	}
 
@@ -92,9 +173,8 @@ public class DJView implements ActionListener, BeatObserver, BPMObserver {
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent arg0) {
+	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-
+		
 	}
-
 }
