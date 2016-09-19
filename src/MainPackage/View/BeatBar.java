@@ -18,7 +18,8 @@ public class BeatBar extends JProgressBar implements Runnable {
 		// set the maximum for progress bar
 		
 		thread = new Thread(this);
-		setMaximum(100);
+		progressBar = new JProgressBar(0, 100);
+		progressBar.setValue(0);
 		thread.start();
 	}
 
@@ -29,9 +30,14 @@ public class BeatBar extends JProgressBar implements Runnable {
 		// TODO Auto-generated method stub
 		for (;;){
 			// decrement the value bar by .25 every 50 ms and repaint to display changes in model
-			int value = getValue();
+			int value = progressBar.getValue();
 			value = (int)(value * .75);
-			setValue(value);
+			
+			if (value % 2 != 0){
+				System.err.println(value);
+			}
+			
+			progressBar.setValue(value);
 			try{
 				Thread.sleep(50);
 			}catch(Exception e){

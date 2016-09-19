@@ -11,6 +11,7 @@ public interface BeatModelInterface {
 	void setBPM(int bpm); // set the BPM and change beat frequency immediately
 	
 	int getBPM(); //return current BPM or 0 if off
+	
 	// two kinds of observers : BeatObserver - notified on every beat, or notified on every BPM change
 	void registerObserver (BeatObserver o);
 	
