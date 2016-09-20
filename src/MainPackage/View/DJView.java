@@ -162,7 +162,7 @@ public class DJView implements ActionListener, BeatObserver, BPMObserver {
 	}
 	
 	public void enableStopMenuItem(){
-		stopMenuItem.setVisible(true);
+		stopMenuItem.setEnabled(true);
 	}
 	
 	public void disableStopMenuItem() {

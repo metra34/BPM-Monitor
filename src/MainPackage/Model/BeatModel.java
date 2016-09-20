@@ -21,9 +21,10 @@ public class BeatModel implements BeatModelInterface, MetaEventListener {
 	private Track track;
 	
 	@Override
-	public void meta(MetaMessage arg0) {
+	public void meta(MetaMessage message) {
 		// Start the sequence again and send notification to beat observers
-		if (arg0.getType() == 47){
+		if (message.getType() == 47){
+			System.err.println("47");
 			beatEvent();
 			this.sequencer.start();
 			setBPM(getBPM());
@@ -39,14 +40,14 @@ public class BeatModel implements BeatModelInterface, MetaEventListener {
 	
 	public void setUpMidi() {
 		try{
-			sequencer = MidiSystem.getSequencer();
-			sequencer.open();
-			sequencer.addMetaEventListener(this);
+			this.sequencer = MidiSystem.getSequencer();
+			this.sequencer.open();
+			this.sequencer.addMetaEventListener(this);
 			sequence = new Sequence(Sequence.PPQ, 4);
 			track = sequence.createTrack();
-			sequencer.setTempoInBPM(getBPM());
+			this.sequencer.setTempoInBPM(getBPM());
 			// added setSequence to fix IllegalStateException
-			sequencer.setSequence(sequence);
+			this.sequencer.setSequence(sequence);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -66,7 +67,7 @@ public class BeatModel implements BeatModelInterface, MetaEventListener {
 	@Override
 	public void on() {
 		// start the sequencer and set the bpm, default: 90
-		sequencer.start();
+		this.sequencer.start();
 		setBPM(90);
 	}
 
@@ -111,7 +112,7 @@ public class BeatModel implements BeatModelInterface, MetaEventListener {
 		bpmObservers.remove(o);
 	}
 	
-	void beatEvent(){
+	public void beatEvent(){
 		notifyBeatObservers();
 	}
 	
@@ -119,6 +120,7 @@ public class BeatModel implements BeatModelInterface, MetaEventListener {
 		//loop through BeatObservers and call updateBeat()
 		for (int i=0; i<beatObservers.size(); i++){
 			BeatObserver obs = (BeatObserver) beatObservers.get(i);
+			System.err.println("BeatObserver "+i+obs.toString());
 			obs.updateBeat();
 		}
 	}
@@ -144,13 +146,13 @@ public class BeatModel implements BeatModelInterface, MetaEventListener {
 		}
 	}
 	
-	public MidiEvent makeEvent(int i, int j, int k, int l, int m) {
+	public MidiEvent makeEvent(int comd, int chan, int one, int two, int tick) {
 		// TODO Auto-generated method stub
 		MidiEvent event = null;
 		try{
 			ShortMessage a = new ShortMessage();
-			a.setMessage(i, j, k, l);
-			event = new MidiEvent(a, m);
+			a.setMessage(comd, chan, one, two);
+			event = new MidiEvent(a, tick);
 		}catch(Exception e){
 			e.printStackTrace();
 		}

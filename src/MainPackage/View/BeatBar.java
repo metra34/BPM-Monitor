@@ -19,8 +19,12 @@ public class BeatBar extends JProgressBar implements Runnable {
 		
 		thread = new Thread(this);
 		progressBar = new JProgressBar(0, 100);
-		progressBar.setValue(0);
+		progressBar.setValue(50);
 		thread.start();
+	}
+	
+	public void setValue(int v){
+		progressBar.setValue(v);
 	}
 
 	// Implemented from Runnable, run is called in a separate thread and called in that separately executing thread
@@ -33,9 +37,7 @@ public class BeatBar extends JProgressBar implements Runnable {
 			int value = progressBar.getValue();
 			value = (int)(value * .75);
 			
-			if (value % 2 != 0){
-				System.err.println(value);
-			}
+			System.out.println("Beatbar value: "+value);
 			
 			progressBar.setValue(value);
 			try{
